@@ -1,0 +1,293 @@
+# ==========================================================
+# 💻 Lux Script v1.0 — Painel de Verificadas
+# ==========================================================
+# BASE: PowerShell + Telegram Bot API
+# STATUS: PRODUÇÃO ESTÁVEL | VERSÃO OTIMIZADA
+# FUNÇÃO: Gestão de Verificadas + Monitoramento em Tempo Real
+# SAÍDAS: Lista_Pronta.txt | Lista_Controle.txt | Lista_De_Saida.txt
+# COMPATIBILIDADE: Windows PowerShell 5.1+ / PowerShell 7+
+# ==========================================================
+#
+# 📋 FUNCIONALIDADES ATIVAS
+# ----------------------------------------------------------
+# MONITOR_REALTIME  → Atualiza @nome em tempo real      | ✅ ATIVO
+# DETECTA_SAIDA     → Identifica quem saiu do grupo     | ✅ ATIVO
+# DETECTA_RESTRITO  → Marca usuários restritos          | ✅ ATIVO
+# DETECTA_EXCLUIDO  → Loga contas excluídas/deletadas   | ✅ ATIVO
+# CHECKPOINT_AUTO   → Salva progresso automaticamente   | ✅ ATIVO
+# OUTPUT_FORMATADO  → 3 arquivos prontos para uso       | ✅ ATIVO
+# ----------------------------------------------------------
+#
+# 📋 ARQUIVOS GERADOS
+# ----------------------------------------------------------
+# Lista_Pronta.txt    → Lista formatada para colar no bot
+# Lista_Controle.txt  → Backup simples (@nome - ID)
+# Lista_De_Saida.txt  → Relatório de alterações (restritas, saídas, excluídas)
+# ----------------------------------------------------------
+#
+# ==========================================================
+# ⚙️ CONFIGURAÇÕES LOCAIS
+# ==========================================================
+#
+$TOKEN    = "SEU_TOKEN_AQUI"                    # ← TOKEN DO BOT
+$ID_GRUPO = "-1002719221359"                    # ← ID DO GRUPO
+$Caminho_Verificadas = "D:\Python\CULTO FETICHISTA\Verificadas\Lista_Pronta.txt"
+$Caminho_Controle    = "D:\Python\CULTO FETICHISTA\Verificadas\Lista_Controle.txt"
+$Caminho_Relatorio   = "D:\Python\CULTO FETICHISTA\Verificadas\Lista_De_Saida.txt"
+#
+# ==========================================================
+# ✨ DESIGN (NÃO MEXER)
+# ==========================================================
+#
+$E_STAR = [char]0x2B50; $E_CHECK = [char]0x2714 + [char]0xFE0F; $E_DOT = [char]0x2022
+$E_CROWN = [char]::ConvertFromUtf32(0x1F451); $E_REFRESH = [char]::ConvertFromUtf32(0x1F504)
+$E_UP = [char]::ConvertFromUtf32(0x1F53C); $U_JOINER = [char]0x2060
+$MEU_CABECALHO = "$E_STAR Verificadas | $E_CHECK Postagens de mídia autorizadas $E_DOT Vídeo autenticado"
+$MEU_RODAPE    = "$E_CROWN Atualização $E_REFRESH"
+$TEXTO_BOTAO   = "$E_UP Para se verificar, role até o topo e clique no botão."
+#
+# ==========================================================
+# 👑 LISTA DE ENTRADA (MEXER AQUI)
+# ==========================================================
+# 📝 Formato: @usuario - ID (um por linha)
+# ✅ Adicione ou remova usuários conforme necessário
+# ==========================================================
+#
+$ids_brutos = @"
+
+@Geh2025 - 7305884145
+@Goddessdarika - 5653990656
+@notpulaski - 8229916930
+@Jessyoliver91 - 1658543426
+@Findomnikita - 8059321279
+@MsIngrid - 1206935016
+@ruivaa015 - 6313454861
+@Princesamanu - 7023710963
+@Fenixxunique - 6057933920
+@ferzfc - 5926368607
+@Emydepaula - 7280333864
+@Isabele26 - 6819081898
+@FeetByRac - 5924688384
+@Sabrinacsc - 1769187392
+@camilleczr - 5377822898
+@MadSadic - 7790971702
+@Venusluxodomme - 6635853154
+@alana0321 - 8011923566
+@eduarda2538 - 8388432248
+@goddessgmajid - 6307243202
+@fran_fari - 6513621294
+@nuvensy - 7125459047
+@rainhatoria - 6814066867
+@dommesevera - 7071660586
+@queenofwands_t - 1070818704
+@Scionrox - 8483398964
+@kdomm20 - 5132499510
+@nanacamposs - 6729115313
+@MarcelaAF - 7014172928
+@Alinefeet - 8257716984
+@dommelalis - 8060646284
+@janesclarinha - 8404478008
+@taisborgesfeet - 6673991466
+@taisborgesfeet36 - 6409582196
+@itsbeatrizf - 5533429308
+@j93sc - 5816005814
+@raquel8850 - 8082787741
+@Kitty_Vih2 - 8234162373
+@Queen_Mellzn - 5481715933
+@kassyprivado - 7853280597
+@ladyqueentata - 8076829223
+@Miilux - 5796251588
+@Andressaoliveira0710 - 1658390495
+@samiramarketingg - 1193524457
+@giih_ruiva - 7435955724
+@GATA27PARANA - 7361405976
+@packdalu - 7873242050
+@alissyaa_zz - 6307457220
+@bru_mayarock - 6321661595
+@Naftalinavaporo - 6036280256
+@psivivyan - 478752576
+@nicklyemi - 8280459194
+@carlaise - 6521906971
+@SabrinaFox_Oficial - 7665185799
+@thgoth13 - 7487129130
+@feetpenny - 6519101820
+@pesdamaria - 7018263793
+@Leallore09 - 5509623801
+@ruivinha2909 - 1036435532
+@annafeet2 - 6121309583
+@Marideusasigilo - 7792584079
+@Magichussein - 5858789998
+@Orianna_Alegra - 5981795532
+@bruconc - 8553619548
+@barbezinhabibi - 8391620504
+@Jusilvaaaa - 8282431602
+@ana_raposinha - 6983465517
+@costacohen - 8575165120
+@Natiysantoos - 6244691550
+@isaxisxisxis - 5259271972
+@Cari_prin - 8418206802
+@NaylaVerdan - 8248812807
+@tok1o7 - 7632548003
+@tokyobabe1 - 1184198447
+@Sandyshow33 - 6903260283
+@Misshekate - 5999829545
+@val1993 - 5742624195
+@Barbarasalles9200 - 8021903385
+@danijk20 - 1571116875
+@Fercavalcante25 - 8522011834
+@jessikasantos2602 - 6068260401
+@jessieberni - 1294858595
+@pezinhobru - 8489164074
+@madamdrain - 7768628283
+@Ruivinhacasada - 6867440927
+@Lalas1806 - 6469026879
+@Naty_DA - 6419584159
+@Lissoliveira - 5929960155
+@feetfabulous - 6575714279
+@borboleta_azul25 - 6528913610
+@MazinhaO - 5321141901
+@Feet36vi - 7493333629
+@Amanda_Sts - 1268730151
+@RainhaLari - 8284197053
+@moiramaju - 1221864727
+@mariaxzvi - 6823477668
+@feet_myy - 8505946628
+@Maybe_bolin - 5000687906
+@Viiqelisa - 6428789516
+@Julia_kethellen - 1822958905
+@fmiho98 - 1192347058
+@kc_mila - 1888111758
+@Miss_Karoll - 7763908523
+@gddanii - 8527599400
+@Gotiquinha - 8045074302
+@pezinhos013 - 7681147046
+@bruna1911 - 5565576301
+@Anymuneratto - 1390965815
+@indyafeet - 6766815582
+@Jbuvelle - 7865389463
+@Ninfavenus - 8276879216
+@vick_vick_1 - 6704610190
+@RaissaBP - 6544971320
+@Megan_2005 - 6526365513
+@Babygirlbe - 1584053996
+@Paty0666 - 6898438497
+@Stherzinha2019 - 6331382573
+@juliaborin - 5726133275
+@yaew_ellen - 8126763903
+@HannyGyn062 - 7033616520
+@pesdewakanda - 8268901928
+@gabizinha_00 - 7858597363
+@Fany_cerejinha - 1622925093
+@cacausz12 - 8400425187
+@Domme_Mandy - 8222303633
+@Amy_beeeeee - 8185695999
+@Miss7x7x - 8122111910
+@Kaakkp - 1474954202
+@tocadacoelhaa - 8066220785
+@EffyWaifu - 7828329368
+@geeohkaren - 7622959159
+@bbz77p - 7217858391
+@Rayeqw - 7208080471
+@almondbella - 8594741986
+@FadinhaPr - 8302411277
+@Alice_Scotini - 7900451051
+
+"@ -split "`n"
+#
+# ==========================================================
+# 🧩 PROCESSAMENTO (NÃO MEXER)
+# ==========================================================
+#
+$verificadas_com_arroba = @(); $verificadas_sem_arroba = @()
+$corpo_controle = ""; $restritas_lista = @(); $mudancas_lista = @(); $saidas_lista = @(); $excluidas_lista = @()
+Write-Host "`n[+] Analisando em tempo real..." -ForegroundColor Cyan
+
+foreach ($linha_bruta in $ids_brutos) {
+    $nome_atual_tg = $null; $u_info = $null; $status = $null; $resp = $null
+    
+    $linha = $linha_bruta.Trim()
+    if ([string]::IsNullOrWhiteSpace($linha)) { continue }
+    $linha = $linha -replace '-(\d{8,})$', ' - $1'
+    
+    if ($linha -match '^(?<Nome>.+?)\s*[-–—_|:\s]\s*(?<ID>\d{8,15})$') {
+        $nome_lista = $matches['Nome'].Trim(); $id = $matches['ID'].Trim()
+        
+        try {
+            $resp = Invoke-RestMethod -Uri "https://api.telegram.org/bot$TOKEN/getChatMember?chat_id=$ID_GRUPO&user_id=$id" -Method Get -ErrorAction Stop
+            
+            if ($resp.ok -eq $true) {
+                $u_info = $resp.result.user
+                $status = $resp.result.status
+                
+                if ($u_info.username) { $nome_atual_tg = "@" + $u_info.username } 
+                else { $nome_atual_tg = if ($u_info.last_name) { $u_info.first_name + " " + $u_info.last_name } else { $u_info.first_name } }
+
+                if ([string]::IsNullOrWhiteSpace($nome_atual_tg)) { throw "Nome vazio" }
+
+                # 🚀 LÓGICA DE MUDANÇA E ATIVAÇÃO UNIFICADA
+                if ($status -match "creator|administrator|member") {
+                    
+                    # 🔁 Se mudou o nome, avisa em amarelo e não imprime o verde depois
+                    if ($nome_lista -ne $nome_atual_tg) {
+                        $mudancas_lista += " [Mudou Nome] $nome_lista -> $nome_atual_tg - $id"
+                        Write-Host " Mudou: $nome_lista -> $nome_atual_tg" -ForegroundColor Yellow
+                    } else {
+                        # ✅ Só imprime "Ativa" se o nome NÃO mudou
+                        Write-Host " Ativa: $nome_atual_tg" -ForegroundColor Green
+                    }
+
+                    # Adiciona na lista final (Pronta) e no Controle
+                    if ($u_info.username) { $verificadas_com_arroba += "$E_STAR @$U_JOINER$($u_info.username)" }
+                    else { $verificadas_sem_arroba += "$E_STAR $nome_atual_tg" }
+                    $corpo_controle += "$nome_atual_tg - $id`r`n"
+                }
+                elseif ($status -eq "restricted") {
+                    $corpo_controle += "$nome_atual_tg - $id`r`n"
+                    $restritas_lista += " [Restrita] $nome_atual_tg - $id"
+                    Write-Host " Restrita: $nome_atual_tg" -ForegroundColor White
+                }
+                elseif ($status -eq "left" -or $status -eq "kicked") {
+                    $saidas_lista += " [Saiu do Grupo] $nome_atual_tg - $id"
+                    Write-Host " Saiu: $nome_atual_tg" -ForegroundColor Cyan
+                }
+            }
+        } catch {
+            $excluidas_lista += " [Conta Excluída] $nome_lista - $id"
+            Write-Host " Excluída: $nome_lista" -ForegroundColor Red
+            continue 
+        }
+    }
+}
+#
+# ==========================================================
+# 📑 MONTAGEM FINAL (NÃO MEXER)
+# ==========================================================
+#
+$corpo_final_verificadas = ($verificadas_com_arroba + $verificadas_sem_arroba) -join "`r`n"
+$relatorio_final = "--- Relatório de Alterações ---`r`n`r`n"
+$relatorio_final += "--- RESTRITAS ---`r`n" + ($restritas_lista -join "`r`n") + "`r`n`r`n"
+$relatorio_final += "--- MUDANÇAS DE NOME ---`r`n" + ($mudancas_lista -join "`r`n") + "`r`n`r`n"
+$relatorio_final += "--- SAIU DO GRUPO ---`r`n" + ($saidas_lista -join "`r`n") + "`r`n`r`n"
+$relatorio_final += "--- CONTAS EXCLUÍDAS ---`r`n" + ($excluidas_lista -join "`r`n")
+$utf8EmitBOM = New-Object System.Text.UTF8Encoding($true)
+[System.IO.File]::WriteAllText($Caminho_Verificadas, "$MEU_CABECALHO`r`n`r`n$corpo_final_verificadas`r`n`r`n$MEU_RODAPE`r`n`r`n$TEXTO_BOTAO", $utf8EmitBOM)
+[System.IO.File]::WriteAllText($Caminho_Controle, $corpo_controle, $utf8EmitBOM)
+[System.IO.File]::WriteAllText($Caminho_Relatorio, $relatorio_final, $utf8EmitBOM)
+#
+# ==========================================================
+# 📊 RELATÓRIO FINAL FORMATADO
+# ==========================================================
+#
+Write-Host "`n[!] Finalizado com sucesso!" -ForegroundColor Cyan
+Write-Host "📊 Usuários analisados: $($ids_brutos.Count)" -ForegroundColor Gray
+Write-Host "✅ Ativos: $($verificadas_com_arroba.Count + $verificadas_sem_arroba.Count)" -ForegroundColor Green
+if ($mudancas_lista.Count -gt 0) { Write-Host "🔄 Mudanças de nome: $($mudancas_lista.Count)" -ForegroundColor Yellow }
+if ($restritas_lista.Count -gt 0) { Write-Host "🔇 Restritas: $($restritas_lista.Count)" -ForegroundColor White }
+if ($saidas_lista.Count -gt 0) { Write-Host "🚪 Saíram: $($saidas_lista.Count)" -ForegroundColor Cyan }
+if ($excluidas_lista.Count -gt 0) { Write-Host "❌ Excluídas: $($excluidas_lista.Count)" -ForegroundColor Red }
+Write-Host "`n📁 Arquivos gerados:" -ForegroundColor Gray
+Write-Host "   • Lista_Pronta.txt" -ForegroundColor Gray
+Write-Host "   • Lista_Controle.txt" -ForegroundColor Gray
+Write-Host "   • Lista_De_Saida.txt" -ForegroundColor Gray
+Write-Host "`nPressione qualquer tecla para sair..." -ForegroundColor Gray
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
