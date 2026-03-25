@@ -55,6 +55,7 @@ $TEXTO_BOTAO   = "$E_UP Para se verificar, role até o topo e clique no botão."
 #
 $ids_brutos = @"
 
+@pedemoca - 8251388183
 @Geh2025 - 7305884145
 @Goddessdarika - 5653990656
 @notpulaski - 8229916930
